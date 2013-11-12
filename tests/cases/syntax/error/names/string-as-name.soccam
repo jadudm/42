@@ -1,0 +1,5 @@
+;; string-as-name.soccam
+;; Tests: Names should not be strings.
+(module string-as-name soccam
+  (decl (["x" int])
+    (:= x 1)))

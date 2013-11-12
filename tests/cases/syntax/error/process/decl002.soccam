@@ -1,0 +1,5 @@
+(module decl001 soccam
+  (decl ([x int])
+    ((:= x 1)
+     (:= x 1)))
+)

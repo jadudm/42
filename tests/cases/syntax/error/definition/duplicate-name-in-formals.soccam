@@ -1,0 +1,14 @@
+;; duplicate-name-in-formals.soccam
+;; Tests: 
+(module duplicate-name-in-formals soccam
+  (proc foo ()
+    (stop))
+  (proc bar ([x int])
+    (skip))
+  (proc gee ([x int]
+             [y int]
+             [x chan])
+    (seq
+     (skip)
+     (skip)))
+)

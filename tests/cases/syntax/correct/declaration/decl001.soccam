@@ -1,0 +1,33 @@
+(module decl001 soccam
+  (proc foo()
+    (decl ([x int])
+      (seq
+       (:= x 1)
+       (:= x 4))))
+)
+
+
+#|KROC:
+.JENTRY foo
+.ALIGN 2
+
+L0:
+.GLOBAL foo
+.SETWS 3
+.SETVS 0
+.SETMS 0
+.FILENAME decl001.occ
+.LINE 2
+.PROC foo
+        .LINE 4
+        .LINE 5
+        LDC 1    -- #00000001
+        STL 3
+        .LINE 6
+        LDC 4    -- #00000004
+        STL 3
+        RET
+        .ALIGN 2
+        .END
+|#
+

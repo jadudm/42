@@ -1,0 +1,9 @@
+;; seq-w-empty-seq.soccam
+;; Tests: 'seq' should not be empty
+(module seq-w-empty-seq soccam
+  (proc foo () 
+    (decl ([x int]) 
+      (seq 
+       (decl ([y int])
+         (seq)))))
+)

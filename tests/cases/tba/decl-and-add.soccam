@@ -1,0 +1,9 @@
+(module decl-and-add soccam
+  (proc main ()
+    (decl ([a int]
+           [b int]
+           [c int])
+      (seq
+       (:= a 3)
+       (:= b 5)
+       (:= c (+ (- a a) b))))))

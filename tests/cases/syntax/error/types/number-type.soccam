@@ -1,0 +1,3 @@
+(module number-type soccam
+  (decl ([x 3])
+    (:= x 1)))

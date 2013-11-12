@@ -1,0 +1,11 @@
+(module usage-assignment-test (twu gv)
+  (proc bar ()
+    (skip))
+  
+  (proc foo ((x int)
+             (ch chan))
+    (seq
+     (:= x 3)
+     (! ch x)
+     (? ch x)
+     (bar))))

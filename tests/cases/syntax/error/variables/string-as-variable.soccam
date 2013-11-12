@@ -1,0 +1,6 @@
+;; string-as-variable.soccam
+;; Tests: 
+(module string-as-variable soccam
+  (decl ([x int])
+    (:= "x" 1))
+)

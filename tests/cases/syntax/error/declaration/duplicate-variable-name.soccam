@@ -1,0 +1,12 @@
+;; duplicate-variable-name.soccam
+;; Tests: 
+(module duplicate-variable-name soccam
+  (decl ([x int]
+         [z chan])
+    (seq
+     (skip)
+     (decl ([x int]
+            [y int]
+            [x int])
+       (stop))))
+)

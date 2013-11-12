@@ -1,0 +1,45 @@
+;; nested-decls.soccam
+;; Tests: Can declarations be nested? 
+;;        Matt thinks so...
+(module nested-decls soccam
+  (proc foo ()
+    (decl ([x int]
+           [y int])
+      (decl ([z int])
+        (seq
+         (decl ([q int])
+           (par 
+            (skip)
+            (skip)))))))
+  
+  (proc bar ([x int])
+    (decl ([a int]
+           [b int]
+           [c int])
+      (seq
+       (:= a (+ a 1))
+       (par
+        (foo)
+        (decl ([b int])
+          (:= b (+ b 2)))
+        (decl ((b int)
+               (c int))
+          (seq
+           (par
+            (:= c 3)
+            (! c b)
+            (:= b (+ c 3)))
+           (:= c 3)))))))
+)
+
+#|
+INT x:
+INT y:
+INT z:
+SEQ
+  INT q:
+  PAR
+    SKIP
+    SKIP
+|#
+

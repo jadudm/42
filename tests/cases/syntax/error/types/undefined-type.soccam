@@ -1,0 +1,7 @@
+;; undefined-type.soccam
+;; Tests: A type that hasn't been defined cannot be used.
+(module undefined-type soccam
+  (decl ([x int])
+    (decl ([y poo])
+      (:= x y)))
+  )

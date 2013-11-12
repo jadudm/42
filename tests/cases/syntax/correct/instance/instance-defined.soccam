@@ -1,0 +1,17 @@
+;; instance-defined.soccam
+;; Tests: 
+(module instance-defined (driver sp2a)
+  (proc foo ([x int]
+             [y int])
+    (seq
+     (:= x 1)
+     (skip)))
+  
+  (proc main ()
+    (decl ([x int]
+           [y int])
+      (seq
+       (:= x (+ (* 1 2) 3 ))
+       (:= y 5)
+       (foo x y))))
+)

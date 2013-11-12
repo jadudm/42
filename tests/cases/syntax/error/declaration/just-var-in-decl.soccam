@@ -1,0 +1,6 @@
+;; just-var-in-decl.soccam
+;; Tests: Absense of a var/type pair
+(module just-var-in-decl soccam
+  (proc foo() 
+    (decl (x y)))
+)

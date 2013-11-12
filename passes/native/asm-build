@@ -1,0 +1,3 @@
+gcc -S -Osruntime.c
+gcc -S -O efficienC.c
+gcc -S -O commstime-generated.c

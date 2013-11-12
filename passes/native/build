@@ -1,0 +1,4 @@
+gcc -c -g runtime.c
+gcc -c -g efficienC.c
+gcc -c -g commstime-generated.c
+gcc -g -o commstime commstime-generated.o efficienC.o runtime.o

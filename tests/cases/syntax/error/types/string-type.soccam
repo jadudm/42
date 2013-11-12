@@ -1,0 +1,6 @@
+(module string-type soccam
+  (decl ([x "int"])
+    (seq
+     (:= x 1)
+     (:= x 2)
+    )))

@@ -1,0 +1,5 @@
+CFLAGS="-O2 -fomit-frame-pointer"
+gcc $CFLAGS -c runtime.c
+gcc $CFLAGS -c efficienC.c
+gcc $CFLAGS -c commstime-generated.c
+gcc $CFLAGS -o commstime commstime-generated.o efficienC.o runtime.o

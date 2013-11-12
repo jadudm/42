@@ -1,0 +1,138 @@
+42
+--
+(As of 20060609)
+
+This week was productive, and we have bootstrapped the compiler to the point where it parses a small syntax, and (perhaps more interestingly) is rapidly approaching the point where we can do very interesting things with error handling at the front-end. 
+
+We have written three passes, a very rudimentary/trivial driver, and a few unit tests for one of the passes. Our next step is to focus in on unit tests for the remainder of the passes (perhaps writing both pass- and production-level tests), as well as setting up an end-to-end test harness. Either way, stepping back and getting more tests in place is certainly important at this point.
+
+I'll focus in on the three passes for a moment, then the driver (as well as how to build and run the compiler), and then take just a moment on the syntaxes used to write the compiler.
+
+expand.scm
+----------
+Not truly a pass; this takes a file, which contains only a single s-expression, and expands it, including syntax information for every list. Furthermore, all symbolic information comes in as syntax objects, which we pull apart and reuse later. (A syntax object is a syntactic notion in MzScheme; see the Help Desk or PLT Language Manual for more on syntax and syntax objects.)
+
+parse.scm
+---------
+The first pass is the most complex; while we strive for reuse, no other pass will be converting s-expressions into records (structures). However, we have tried to keep this pass as simple and clean as possible, as it will need to be extended later. 
+
+If we have a file that comes in as 
+
+(foo x)
+
+we get (from expand.scm):
+
+(<syntax-object> <syntax-object> <syntax-object>)
+
+where the first syntax object represents the entire list, and the next two represent the symbols 'foo and 'x. This mess is converted into structures along the lines of
+
+(make-function-call <meta> 'foo (make-arg <meta> 'x))
+
+where every structure carries around some metadata. In this metadata, we store the syntax object associated with the symbol; this comes in for error handling.
+
+To report errors, we're currently trying to use MzScheme's 'raise-syntax-error', which is usually used by the reader/expander for reporting syntax errors. Because we have real syntax objects, we can pass these to the 'raise' call, and it will generate pretty/slick/great awesome error messages that include all the correct syntax information (file name, line number, column number). This really is a treat. We've also kept the syntax information for the parent expression as well; this way, the error message reads along the lines of:
+
+========================================
+[Lyra] usb > ./42 poo.soccam
+poo.soccam:11:4: declaration: bad declaration at: (decl ((x int)) (:= x 1) (:= x 2)) in: (proc gee () (decl ((x int)) (:= x 1) (:= x 2)))
+========================================
+
+it's a bit verbose, but... at the same time, this is a really nice point to be at. Obviously, we want to refine the "bad declaration" syntax error... but to have an error that is that verbose/accurate at this stage is pretty cool. At least I think so. (Damian agrees.)
+
+identity0.scm
+-------------
+Damian wrote this one all by his lonesome. Well, we've been working as a pair, but when I dive into grammar.scm, I suspect Damian still isn't quite at home yet. Either way, this pass deconstructs the syntax tree, and reconstructs it. Currently, on our to-do list is to add more sanity checking here, as well as better error handling (all passes are currently very much in flux regarding error handling... we've been fighting it all along, and are still trying to find something that is flexible/powerful/consistent.) 
+
+However, this is the first pass that we're likely to reuse over-and-over, as it takes the basic structures that make up the syntax tree and rebuilds them verbatim. It is, in many ways, far less "exciting" than parse.scm, but it is far more useful---more time will be spent here, and it will likely pay off later in the compiler.
+
+uniquely-name-variables.scm
+---------------------------
+Honestly, I don't know how to spell 'uniquely'. We haven't looked it up, either.
+
+This crawls the tree, and makes sure that all variables are uniquely named within their scope. (Channels as well... all declarations and formals in 'proc' headers, basically.) This pass hasn't been unit tested yet, but it "looks right." No doubt we'll miss some big, bone-headed thing later.
+
+What's really sweet is we rename the symbols stored in the structures. For example, a variable structure might look like
+
+(make-variable <meta> 'x)
+
+and we would rename this to something like
+
+(make-variable <meta> 'x.2)
+
+but in the metadata, we still carry the syntax object from the parse pass. Therefore, if we throw syntax errors regarding this variable (like a "variable undefined" error, which shows up in this pass), it uses the syntax information from the original variable. This means that we don't have to do any work to get the original variable name back. I know this seems obvious/dumb/trivial, but having the original syntax object around at all times (as well as the syntax object for the parent expression, which might (in this case) be something like:
+
+(:= x 1)
+
+is really sweet.) 
+
+Anyway, it is another pass that suffers from 1. inconsistent error handling and 2. not enough testing. However, we've been experimenting a lot with style, and have refactored these passes a bit several times already, just trying to get to something consistent/repeatable/clear. parse.scm has consumed most of Matt's time, while Damian wrote most all of u-n-v.scm and identity0.scm.
+
+driver.scm
+----------
+
+Building the compiler is pretty straight-forward:
+
+mzc --exe 42 driver.scm
+
+I'm building with 301.14; any 301-series MzScheme or greater should be just fine.
+
+Once built, you can invoke it with one argument on the command line:
+
+========================================
+[Lyra] usb > ./42 --help
+42 [ <flag> ... ] <filename>
+ where <flag> is one of
+  --help, -h : Show this help
+  -- : Do not treat any remaining argument as a flag (at this level)
+ Multiple single-letter flags can be combined after one `-'; for
+  example: `-h-' is the same as `-h --'
+========================================
+
+Note that any program you feed it must be of the form:
+
+========================================
+(module <file> soccam
+  <code-goes-here>
+)
+========================================
+
+Right now we're not checking the filename, and yes Adam, I know we need to look at the OEP... but we don't have internet right now, so... well, given that it really isn't a module system (yet), I'm not too worried. Mostly, it means the entire file is just one s-expression, which was the important thing.
+
+Here's a file we're playing with (called "poo.soccam"):
+
+========================================
+(module poo soccam
+  
+  (proc foo ()
+    (decl ([x int]
+           [y int])
+      (seq
+       (:= x 1)
+       (:= y 2))))
+  
+  (proc gee ()
+    (decl ([x int])
+      (:= x 1)
+      (:= x 2)))
+  
+  (proc bar ([x int])
+    (par
+     (:= x 1)
+     (:= y 2)))
+  )
+========================================
+
+This file crashes in the proc 'gee'. The next proc should crash as well ('bar'). Either way, we don't do any real syntax checking past the parse, but that's what future passes are for.
+
+That's it
+---------
+That's the state of the compiler at the moment: three passes and a toy driver. We don't have a shopping list for this compiler to-hand; I know CLJ and I have talked a lot about what we wish it could do... that is, not just language features, but features the compiler should have. If any come to mind off the top of your head, please drop us a note... it's better to have them in mind sooner rather than later. 
+
+Already, we have a lot of context information from the parse... far more than I think we know what to do with, really... and I think that's good. Beyond that, we're going to focus in on some tests early next week, and then see how far we can sprint by the end of the week. Having a working compiler by the end of next week, with a bunch of tests in place, would be awesome. Even if this language is small/toy/trivial.
+
+Cheers,
+D+M
+
+
+
+

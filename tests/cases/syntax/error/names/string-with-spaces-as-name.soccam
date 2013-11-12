@@ -1,0 +1,6 @@
+;; string-with-spaces-as-name.soccam
+;; Tests: Declaration of names with spaces.
+(module string-with-spaces-as-name soccam
+  (decl (["this is a story" int])
+    (skip))
+)

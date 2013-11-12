@@ -1,0 +1,7 @@
+;; proc-with-empty-par.soccam
+;; Tests: 'par' should not be empty.
+(module proc-with-empty-par soccam
+  (proc foo () 
+    (decl ([x int]) 
+      (par)))
+  )

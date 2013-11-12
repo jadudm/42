@@ -1,0 +1,21 @@
+;; duplicate-proc-names.soccam
+;; Tests: check-duplicate-definitions.scm
+(module duplicate-proc-names soccam
+  
+  (proc foo ()
+    (stop))
+  
+  (proc bar ([x int])
+    (skip))
+  
+  (proc foo ([x int]
+             [y int]
+             [z chan])
+    (seq
+     (skip)
+     (skip)))
+  
+  (proc foo ([x chan])
+    (seq
+     (skip)))
+  )

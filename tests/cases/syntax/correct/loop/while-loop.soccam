@@ -1,0 +1,57 @@
+;; while-loop.soccam
+;; Tests: 
+(module while-loop (silent:show-assembly awu)
+
+  (proc foo ([x int])
+    (seq
+     (:= x 3)
+     (while (> x 0)
+       (:= x (- x 1))))))
+
+#| KROC
+.PROC foo
+        .LINE 9
+        .LINE 10
+        LDC 3    -- #00000003
+        LDL 1
+        STNL 0
+        .LINE 11
+
+L1:
+        LDL 1
+        LDNL 0
+        LDC 0    -- #00000000
+        GT
+        CJ L2
+        .LINE 12
+        LDL 1
+        LDNL 0
+        ADC -1
+        LDL 1
+        STNL 0
+        J L1
+
+L2:
+        RET
+        .ALIGN 2
+        .END
+
+|#
+
+#| SOCCAM
+show-assembly: ldc 3
+show-assembly: stnl x.1
+show-assembly: label loop-start.1
+show-assembly: ldnl x.1
+show-assembly: ldc 0
+show-assembly: gt
+show-assembly: cj loop-end.2
+show-assembly: ldc 1
+show-assembly: ldnl x.1
+show-assembly: diff
+show-assembly: stnl x.1
+show-assembly: j loop-start.1
+show-assembly: label loop-end.2
+show-assembly: ldc 1
+show-assembly: stl z.3
+|#

@@ -1,0 +1,6 @@
+;; string-with-spaces-as-variable.soccam
+;; Tests: Tests a string, with spaces, in a variable usage position.
+(module string-with-spaces-as-variable soccam
+  (decl ([x int])
+    (:= "testing 1 2 3" 42))
+)

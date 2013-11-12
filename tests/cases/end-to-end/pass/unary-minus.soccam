@@ -1,0 +1,9 @@
+;; unary-minus.soccam
+;; Tests: This should execute, and leave a -42 in 'x'
+(module unary-minus soccam
+  (proc foo ()
+    (decl ([x int])
+      (seq
+       (:= x (- 42))))))
+
+

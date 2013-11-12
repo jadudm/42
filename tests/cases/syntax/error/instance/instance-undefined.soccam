@@ -1,0 +1,7 @@
+;; instance-undefined.soccam
+;; Tests: 
+(module instance-undefined soccam
+  (proc foo ()
+    (skip))
+  
+  (bar))

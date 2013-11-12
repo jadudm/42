@@ -1,0 +1,13 @@
+;; instance-undefined2.soccam
+;; Tests: 
+(module instance-undefined2 soccam
+  (proc foo ((x int))
+    (skip))
+  
+  (proc main()
+    (decl ([x int])
+      (seq
+       (:= x 4)
+       (foo x)
+       (bar))))
+  )

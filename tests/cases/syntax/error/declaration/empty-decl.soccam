@@ -1,0 +1,57 @@
+;; empty-decl.soccam
+;; Tests: A 'decl' should have one process.
+(module empty-decl soccam
+  ;; This should pass the parser, but later
+  ;; would fail because 'x' is not a value declaration
+  ;; (instead, it is a variable declaration
+  (decl ([x int]) )
+)
+
+
+#|
+;; This throws an error:
+
+INT x:
+PROC foo (INT y)
+ SEQ
+   x := y
+:
+
+=> but this is OK... 
+
+PROC a()
+  INT x:
+  PROC foo (INT y)
+    SEQ
+      x := y
+  :
+:
+
+=> and this is ok...
+
+VAL INT x IS 3:
+PROC foo (INT y)
+ SEQ
+   y := x
+:
+
+
+(decl ([x int])
+  (proc foo ([y int])
+    (seq
+     (:= x y))))
+
+=>  is almost like...
+
+(proc foo ([y int])
+  (decl ([x int])
+    (seq
+     (:= x y))))
+
+=> except for...
+
+(decl ([x int])
+  (proc foo ([x int])
+    (seq
+     (:= x 1))))
+|#

@@ -1,0 +1,9 @@
+;; test-cond.soccam
+;; Tests: 
+(module test-cond soccam
+  (decl ([x int])
+    (cond
+      [(> x 3)  (:= x 1)]
+      [(< x 10) (:= x 2)]
+      ))
+)

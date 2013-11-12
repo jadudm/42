@@ -1,0 +1,5 @@
+;; not-all-decl-lists.soccam
+;; Tests: One of the declarations is not a list.
+(module not-all-decl-lists soccam
+  (proc foo() (decl ([x int] y [z int] q)))
+)

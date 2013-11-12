@@ -1,0 +1,13 @@
+;; empty-list-in-formal.soccam
+;; Tests: 
+(module empty-list-in-formal (silent:show-assembly awu)
+   (proc foo ([])
+    (decl ((x int))
+    (seq
+     (:= x 3)
+     (while (> x 0)
+       (:= x (- x 1)))))))
+
+
+
+

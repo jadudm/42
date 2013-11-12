@@ -1,0 +1,9 @@
+;; no-literal-passed-to-inst.soccam
+;; Tests: 
+(module no-literal-passed-to-inst soccam
+  (proc foo ([x int])
+    (skip))
+  
+  (proc main ()
+    (foo 3))
+)

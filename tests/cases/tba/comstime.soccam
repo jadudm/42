@@ -1,0 +1,102 @@
+(module comstime soccam
+  
+  (proc main ()
+    (comms.time))
+  
+  (proc id ([b_in chan]
+            [a_out chan])
+    (while true
+      (decl ([x int])
+        (seq
+         (? b_in x)
+         (! a_out x)))))
+  
+  (proc succ ([c_in chan]
+              [b_out chan])
+    (while true
+      (decl ([x int]
+             [val int])
+        (seq
+         (? c_in x)
+         (:= val (+ x 1))
+         (! b_out val)))))
+  
+  (proc delta ([in chan]
+               [out1 chan]
+               [out2 chan])
+    (while true
+      (decl ([x int])
+        (seq
+         (? in x)
+         (par 
+          (! out1 x)
+          (! out2 x))))))
+  
+  (proc prefix ([n int]
+                [b_in chan]
+                [a_out chan])
+    (seq
+     (! a_out n)
+     (id b_in a_out)))
+  
+  (proc seq.delta ([a_in chan]
+                   [c_out1 chan]
+                   [d_out2 chan])
+    (while true
+      (decl ([x int])
+        (seq
+         (? a_in x)
+         (seq
+          (! c_out1 x)
+          (! d_out2 x))))))
+  
+  (proc consume ([n.loops int]
+                 [d_in chan])
+    (decl ([value int]
+           [t0 int]
+           [t1 int])
+      (seq
+       
+       (decl ([warm.up int])
+         (seq
+          (:= warm.up 16)
+          (while (> warm.up 0)
+            (seq
+             (? d_in value)
+             (:= warm.up (- warm.up 1))
+             ))))
+       
+       (while true
+         (seq
+          (decl ([n int])
+            (seq
+             (:= n n.loops) 
+             (:= t0 42)
+             ;; Time this loop
+             (while (> n 0)
+               (seq
+                (? d_in value)
+                (:= n (- n 1))))
+             (:= t1 42)
+             ))))
+       )))
+  
+  (proc comms.time ()
+    (decl ([a chan]
+           [b chan]
+           [c chan]
+           [d chan]
+           [zero int]
+           [iterations int])
+      (seq
+       (:= zero 0)
+       (:= iterations 100000)
+       
+       (par
+        (prefix zero b a)
+        (seq.delta a c d)
+        (succ c b)
+        (consume iterations d)))))
+  
+  
+  )

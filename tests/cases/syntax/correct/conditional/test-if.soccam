@@ -1,0 +1,54 @@
+;; test-if.soccam
+;; Tests: 
+(module test-if (show-assembly driver)
+  (decl ([x int]
+         [y int])
+    (seq
+     ;; This should be identical to...
+     (if (> x 3)
+         (:= x 1)
+         (:= y 2))
+     ;; This. Why? Because (if ...) is rewritten
+     ;; as (cond ...) by the parser.
+     (cond 
+       [(> x 3) (:= x 1)]
+       [true (:= y 2)])
+     )))
+#|
+;; This is the output from the IF
+show-assembly: ldl x.1
+show-assembly: ldc 3
+show-assembly: gt
+show-assembly: cj if.2
+show-assembly: ldc 1
+show-assembly: stl x.1
+show-assembly: j end-if.1
+show-assembly: label if.2
+show-assembly: ldc true
+show-assembly: cj if.3
+show-assembly: ldc 2
+show-assembly: stl y.2
+show-assembly: j end-if.1
+show-assembly: label if.3
+show-assembly: label end-if.1
+|#
+
+#|
+;; This is the output from the COND
+show-assembly: (cond ((> x 3) (:= x 1)) (true (:= y 2)))
+show-assembly: ldl x.1
+show-assembly: ldc 3
+show-assembly: gt
+show-assembly: cj if.2
+show-assembly: ldc 1
+show-assembly: stl x.1
+show-assembly: j end-if.1
+show-assembly: label if.2
+show-assembly: ldc true
+show-assembly: cj if.3
+show-assembly: ldc 2
+show-assembly: stl y.2
+show-assembly: j end-if.1
+show-assembly: label if.3
+show-assembly: label end-if.1
+|#

@@ -1,0 +1,38 @@
+;; unary-minus.soccam
+;; Tests: 
+(module unary-minus soccam
+  (proc foo ([z int])
+    (decl ([x int])
+      (seq
+       (:= z (- 8))
+       (:= x (* (- (+ 3 5))
+                (* 1 2)))
+       #|
+         ldc 3
+         ldc 5
+         add
+         not 
+         adc 1
+        |#
+       
+       
+       #|
+show-assembly: ldc 8
+show-assembly: not
+show-assembly: adc 1
+show-assembly: stnl 2
+show-assembly: ldc 3
+show-assembly: ldc 5
+show-assembly: add
+show-assembly: not
+show-assembly: adc 1
+show-assembly: ldc 1
+show-assembly: ldc 2
+show-assembly: prod
+show-assembly: prod
+show-assembly: stl 0
+|#       
+       )))
+)
+
+
